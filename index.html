@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revanth's Tools Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* CSS Variables & RGB definitions for Glassmorphism */
+        :root {
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --transition-smooth: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Dark Theme (Default & Premium looking) */
+        [data-theme="dark"] {
+            --bg-base: #030712;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --card-bg-rgb: 17, 24, 39;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #6366f1;
+            --accent-secondary: #a855f7;
+            --glow-1: #4f46e5;
+            --glow-2: #c026d3;
+            --header-bg: rgba(3, 7, 18, 0.6);
+        }
+
+        /* Light Theme (Clean & Crisp) */
+        [data-theme="light"] {
+            --bg-base: #f8fafc;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --card-bg-rgb: 255, 255, 255;
+            --card-border: rgba(0, 0, 0, 0.08);
+            --accent-primary: #4f46e5;
+            --accent-secondary: #9333ea;
+            --glow-1: #818cf8;
+            --glow-2: #e879f9;
+            --header-bg: rgba(248, 250, 252, 0.6);
+        }
+
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-main);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* --- Ambient Background Glows --- */
+        .ambient-glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.4;
+            animation: float 15s infinite ease-in-out alternate;
+        }
+
+        .glow-1 {
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: var(--glow-1);
+        }
+
+        .glow-2 {
+            bottom: -10%;
+            right: -10%;
+            width: 40vw;
+            height: 40vw;
+            background: var(--glow-2);
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.1); }
+        }
+
+        /* --- Header --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+        }
+
+        .theme-toggle {
+            background: rgba(var(--card-bg-rgb), 0.5);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: var(--transition-bounce);
+            backdrop-filter: blur(8px);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            margin-top: 100px;
+            padding: 4rem 5% 2rem;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            background: rgba(var(--card-bg-rgb), 0.4);
+            border: 1px solid var(--card-border);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(8px);
+            animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* --- Main Grid --- */
+        main {
+            flex: 1;
+            padding: 2rem 5% 5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        /* --- Glassmorphism Cards --- */
+        .card {
+            background: rgba(var(--card-bg-rgb), 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Staggered entrance animations */
+        .card:nth-child(1) { animation-delay: 0.3s; }
+        .card:nth-child(2) { animation-delay: 0.4s; }
+        .card:nth-child(3) { animation-delay: 0.5s; }
+        .card:nth-child(4) { animation-delay: 0.6s; }
+        .card:nth-child(5) { animation-delay: 0.7s; }
+        .card:nth-child(6) { animation-delay: 0.8s; }
+        .card:nth-child(7) { animation-delay: 0.9s; }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+            opacity: 0;
+            transition: var(--transition-smooth);
+            z-index: 0;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3), 
+                        0 0 30px -5px rgba(99, 102, 241, 0.2);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .icon-box {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(var(--card-bg-rgb), 0.8), rgba(var(--card-bg-rgb), 0.2));
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: var(--accent-primary);
+            transition: var(--transition-bounce);
+            box-shadow: 0 8px 16px -4px rgba(0,0,0,0.1);
+        }
+
+        .card:hover .icon-box {
+            transform: scale(1.1) rotate(-10deg);
+            background: var(--accent-primary);
+            color: white;
+            border-color: transparent;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+            flex-grow: 1;
+            font-size: 1.05rem;
+        }
+
+        .card-action {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            color: var(--text-primary);
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--card-border);
+            transition: var(--transition-smooth);
+        }
+
+        .action-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-arrow {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(var(--card-bg-rgb), 0.8);
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-bounce);
+        }
+
+        .card:hover .action-arrow {
+            background: var(--text-primary);
+            color: var(--bg-base);
+            transform: translateX(5px);
+        }
+
+        .card:hover .card-action {
+            color: var(--accent-primary);
+        }
+
+        /* Coming Soon Specifics */
+        .card.disabled {
+            cursor: not-allowed;
+            border-style: dashed;
+        }
+
+        .card.disabled:hover {
+            transform: none;
+            border-color: var(--card-border);
+            box-shadow: none;
+        }
+
+        .card.disabled:hover .icon-box {
+            transform: none;
+            background: linear-gradient(135deg, rgba(var(--card-bg-rgb), 0.8), rgba(var(--card-bg-rgb), 0.2));
+            color: var(--text-secondary);
+            border-color: var(--card-border);
+        }
+
+        .card.disabled .action-arrow {
+            opacity: 0.5;
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 2rem 5%;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--card-border);
+            background: rgba(var(--card-bg-rgb), 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        /* --- Animations --- */
+        @keyframes slideDown {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .grid { grid-template-columns: 1fr; }
+            .card { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-layer-group logo-icon"></i> 
+            <span>Revanth's Workspace</span>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+    </header>
+
+    <div class="hero">
+        <div class="hero-badge">System Architecture & Tooling</div>
+        <h1>Engineered for <br><span class="text-gradient">Efficiency</span></h1>
+        <p>A centralized, high-performance dashboard for web-based utility applications. Built to streamline complex data processing and global time management.</p>
+    </div>
+
+    <main>
+        <div class="grid">
+            
+            <a href="https://revanthabbati.github.io/FileConverter/" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-content">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <h2>Data Formatter Pro</h2>
+                    <p>An advanced conversion utility to parse, convert, and beautify data between XML and JSON architectures with precision.</p>
+                    <div class="card-action">
+                        <span class="action-text">Launch Application</span>
+                        <div class="action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://revanthabbati.github.io/TimeZoneConverter/" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-content">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <h2>Time Converter</h2>
+                    <p>A synchronized time management engine for accurately calculating and translating global time zones for remote operations.</p>
+                    <div class="card-action">
+                        <span class="action-text">Launch Application</span>
+                        <div class="action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://revanthabbati.github.io/CharacterCount/" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-content">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-text-width"></i>
+                    </div>
+                    <h2>Text Metrics Analyzer</h2>
+                    <p>A precision utility to instantly calculate character counts, word density, and string metrics for optimal content formatting.</p>
+                    <div class="card-action">
+                        <span class="action-text">Launch Application</span>
+                        <div class="action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://revanthabbati.github.io/CallsTracker/" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-content">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-phone-volume"></i>
+                    </div>
+                    <h2>Call Metrics Tracker</h2>
+                    <p>A comprehensive tracking dashboard designed to log, monitor, and analyze telephonic data and communication workflows efficiently.</p>
+                    <div class="card-action">
+                        <span class="action-text">Launch Application</span>
+                        <div class="action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://revanthabbati.github.io/PayloadGenerator/" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-content">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <h2>Dynamic Payload Engine</h2>
+                    <p>A robust development tool to construct, format, and generate complex structured data payloads for API integration and testing.</p>
+                    <div class="card-action">
+                        <span class="action-text">Launch Application</span>
+                        <div class="action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://revanthabbati.github.io/TicketsTracker/" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-content">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <h2>Ticket Allocation Engine</h2>
+                    <p>An intelligent tracking system to seamlessly manage, assign, and monitor support tickets and task distribution across team members.</p>
+                    <div class="card-action">
+                        <span class="action-text">Launch Application</span>
+                        <div class="action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            </a>
+
+            <div class="card disabled">
+                <div class="card-content">
+                    <div class="icon-box" style="color: var(--text-secondary);">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h2 style="color: var(--text-secondary);">Module In Queue</h2>
+                    <p>New utility algorithms are currently compiling in the development pipeline. Dashboard will auto-update upon deployment.</p>
+                    <div class="card-action" style="color: var(--text-secondary);">
+                        <span class="action-text"><i class="fa-solid fa-spinner fa-spin" style="margin-right: 5px;"></i> Developing</span>
+                        <div class="action-arrow" style="background: transparent; border: none;"><i class="fa-solid fa-lock"></i></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; <span id="year"></span> Revanth Reddy Abbati. Deployed and live.</p>
+    </footer>
+
+    <script>
+        // Set dynamic year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Theme Toggling Logic
+        const themeBtn = document.getElementById('themeToggle');
+        const themeIcon = themeBtn.querySelector('i');
+        const htmlDoc = document.documentElement;
+
+        const initTheme = () => {
+            const savedTheme = localStorage.getItem('revanth-theme');
+            if (savedTheme) {
+                htmlDoc.setAttribute('data-theme', savedTheme);
+                updateIcon(savedTheme);
+            }
+        };
+
+        const updateIcon = (theme) => {
+            if (theme === 'dark') {
+                themeIcon.className = 'fa-solid fa-sun';
+            } else {
+                themeIcon.className = 'fa-solid fa-moon';
+            }
+        };
+
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = htmlDoc.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            htmlDoc.setAttribute('data-theme', newTheme);
+            localStorage.setItem('revanth-theme', newTheme);
+            updateIcon(newTheme);
+        });
+
+        initTheme();
+    </script>
+</body>
+</html>
